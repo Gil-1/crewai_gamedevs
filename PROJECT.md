@@ -7,8 +7,8 @@ Their goal is to create game prototype fast to develop & test ideas.
 
 ## Technical Tools
 
-- CrewAI
-- Unreal Engine C++
+- CrewAI 130.0
+- Unreal Engine C++ 5.6+
 
 ## Roles
 

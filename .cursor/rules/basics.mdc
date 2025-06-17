@@ -1,0 +1,10 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- your crewAI information is outdated
+- use CrewAI latest documentation from the docs/crewai folder before doing anything
+- read PROJECT.md & README.md
+
+
