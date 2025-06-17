@@ -27,7 +27,7 @@ class GameDevs():
         # Configure LLM with remote Ollama base URL from environment
         ollama_llm = LLM(
             model="ollama/llama3.3:70b-instruct-q2_K",
-            base_url=os.getenv("APP_URL", "http://localhost:11434"),
+            base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.8,
             max_tokens=16000,
             top_p=0.9
@@ -44,7 +44,7 @@ class GameDevs():
         # Configure LLM with remote Ollama base URL from environment
         ollama_llm = LLM(
             model="ollama/qwen3:32b-q4_K_M ",
-            base_url=os.getenv("APP_URL", "http://localhost:11434"),
+            base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.7,
             max_tokens=16000,
             top_p=0.85
@@ -61,7 +61,7 @@ class GameDevs():
         # Configure LLM with remote Ollama base URL from environment
         ollama_llm = LLM(
             model="ollama/llama3.3:70b-instruct-q2_K",
-            base_url=os.getenv("APP_URL", "http://localhost:11434"),
+            base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.3,
             max_tokens=8000,
             top_p=0.9
