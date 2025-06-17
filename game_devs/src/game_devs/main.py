@@ -18,7 +18,7 @@ def run():
     Run the crew for a specific game prototype.
     """
     inputs = {
-        'game': 'Rapid Prototype Platformer'
+        'game': 'Tetris'
     }
 
     try:

@@ -18,3 +18,4 @@ game_developer_task:
   expected_output: >
     A technical implementation plan for the {game} prototype, including architecture, tools, technologies, and a step-by-step prototyping and testing plan.
   agent: game_developer
+  output_file: out/game_design_document.md
