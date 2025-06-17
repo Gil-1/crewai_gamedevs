@@ -94,9 +94,9 @@ class GameDevs():
     @crew
     def crew(self) -> Crew:
         """Creates the GameDevs crew"""
-        # Create knowledge source from GDD Guide
-        gdd_knowledge_source = TextFileKnowledgeSource(
-            file_paths=["GDD_GUIDE.md"]  # Relative path from knowledge directory
+
+        text_source = TextFileKnowledgeSource(
+            file_paths=["game_design_document/instructions.mdx", "game_design_document/template.mdx"]
         )
 
         return Crew(
@@ -104,6 +104,6 @@ class GameDevs():
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            knowledge_sources=[gdd_knowledge_source], # Add knowledge sources here
+            knowledge_sources=[text_source], # Add knowledge sources here
             # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )

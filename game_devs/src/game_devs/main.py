@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 def run():
     """
-    Run the crew for a specific game prototype.
+    Run the crew for a specific game prototype. Create a game design document.
     """
     inputs = {
         'game': 'Tetris'
