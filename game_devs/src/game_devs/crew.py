@@ -43,7 +43,7 @@ class GameDevs():
     def game_designer(self) -> Agent:
         # Configure LLM with remote Ollama base URL from environment
         ollama_llm = LLM(
-            model="ollama/qwen3:32b-q4_K_M ",
+            model="ollama/qwen3:32b-q4_K_M",
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.7,
             max_tokens=16000,
@@ -60,7 +60,7 @@ class GameDevs():
     def game_developer(self) -> Agent:
         # Configure LLM with remote Ollama base URL from environment
         ollama_llm = LLM(
-            model="ollama/llama3.3:70b-instruct-q2_K",
+            model="ollama/llama3.1:8b",
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.3,
             max_tokens=8000,
