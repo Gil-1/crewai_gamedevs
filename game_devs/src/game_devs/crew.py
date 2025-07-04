@@ -23,13 +23,13 @@ class GameDevs():
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def game_director(self) -> Agent:
-        # Configure LLM with Claude Sonnet 4 - latest high-performance model
+        # Configure LLM with Ollama - Director coordinates team
         ollama_llm = LLM(
-            model="ollama/llama3.3:70b-instruct-q2_K",
-            base_url=os.getenv("API_BASE", "http://localhost:11434"),
-            #model="claude-sonnet-4-20250514",
+            model="claude-3-5-haiku-latest",
+            #model="ollama/llama3.1:latest",
+            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.8,
-            max_tokens=32000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,  # Increased to 32K for comprehensive outputs
             top_p=0.9
         )
 
@@ -37,18 +37,19 @@ class GameDevs():
             config=self.agents_config['game_director'], # type: ignore[index]
             llm=ollama_llm,
             verbose=True,
-            allow_delegation=True  # Enable delegation
+            allow_delegation=True,  # ✅ Keep - Director coordinates team
+            memory=True  # ✅ Add - Learn from past collaborations
         )
 
     @agent
     def game_designer(self) -> Agent:
-        # Configure LLM with Claude Sonnet 4 - latest high-performance model
+        # Configure LLM with Ollama - Designer focuses on expertise
         ollama_llm = LLM(
-            #model="claude-sonnet-4-20250514",
-            model="ollama/qwen3:32b-q4_K_M",
-            base_url=os.getenv("API_BASE", "http://localhost:11434"),
+            model="claude-3-5-haiku-latest",
+            #model="ollama/llama3.1:latest",
+            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.7,
-            max_tokens=32000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,  # Increased to 32K for comprehensive outputs
             top_p=0.85
         )
 
@@ -56,18 +57,19 @@ class GameDevs():
             config=self.agents_config['game_designer'], # type: ignore[index]
             llm=ollama_llm,
             verbose=True,
-            allow_delegation=True  # Enable delegation
+            allow_delegation=False,  # ✅ Change - Specialist focuses on expertise
+            memory=True  # ✅ Add - Remember design patterns
         )
 
     @agent
     def game_developer(self) -> Agent:
-        # Configure LLM with Claude Sonnet 4 - latest high-performance model
+        # Configure LLM with Ollama - Developer focuses on expertise
         ollama_llm = LLM(
-            model="ollama/llama3.1:8b",
-            base_url=os.getenv("API_BASE", "http://localhost:11434"),
-            #model="claude-sonnet-4-20250514",
+            model="claude-3-5-haiku-latest",
+            #model="ollama/llama3.1:latest",
+            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.3,
-            max_tokens=32000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,  # Increased to 32K for comprehensive outputs
             top_p=0.9
         )
 
@@ -75,7 +77,8 @@ class GameDevs():
             config=self.agents_config['game_developer'], # type: ignore[index]
             llm=ollama_llm,
             verbose=True,
-            allow_delegation=True  # Enable delegation
+            allow_delegation=False,  # ✅ Change - Specialist focuses on expertise
+            memory=True  # ✅ Add - Remember implementation patterns
         )
 
     @task
