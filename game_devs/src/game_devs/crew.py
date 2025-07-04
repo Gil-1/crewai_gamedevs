@@ -1,7 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from crewai import LLM
 from typing import List
 import os
@@ -24,53 +23,59 @@ class GameDevs():
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def game_director(self) -> Agent:
-        # Configure LLM with remote Ollama base URL from environment
+        # Configure LLM with Claude Sonnet 4 - latest high-performance model
         ollama_llm = LLM(
             model="ollama/llama3.3:70b-instruct-q2_K",
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
+            #model="claude-sonnet-4-20250514",
             temperature=0.8,
-            max_tokens=16000,
+            max_tokens=32000,  # Increased to 32K for comprehensive outputs
             top_p=0.9
         )
 
         return Agent(
             config=self.agents_config['game_director'], # type: ignore[index]
             llm=ollama_llm,
-            verbose=True
+            verbose=True,
+            allow_delegation=True  # Enable delegation
         )
 
     @agent
     def game_designer(self) -> Agent:
-        # Configure LLM with remote Ollama base URL from environment
+        # Configure LLM with Claude Sonnet 4 - latest high-performance model
         ollama_llm = LLM(
+            #model="claude-sonnet-4-20250514",
             model="ollama/qwen3:32b-q4_K_M",
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.7,
-            max_tokens=16000,
+            max_tokens=32000,  # Increased to 32K for comprehensive outputs
             top_p=0.85
         )
 
         return Agent(
             config=self.agents_config['game_designer'], # type: ignore[index]
             llm=ollama_llm,
-            verbose=True
+            verbose=True,
+            allow_delegation=True  # Enable delegation
         )
 
     @agent
     def game_developer(self) -> Agent:
-        # Configure LLM with remote Ollama base URL from environment
+        # Configure LLM with Claude Sonnet 4 - latest high-performance model
         ollama_llm = LLM(
             model="ollama/llama3.1:8b",
             base_url=os.getenv("API_BASE", "http://localhost:11434"),
+            #model="claude-sonnet-4-20250514",
             temperature=0.3,
-            max_tokens=8000,
+            max_tokens=32000,  # Increased to 32K for comprehensive outputs
             top_p=0.9
         )
 
         return Agent(
             config=self.agents_config['game_developer'], # type: ignore[index]
             llm=ollama_llm,
-            verbose=True
+            verbose=True,
+            allow_delegation=True  # Enable delegation
         )
 
     @task
@@ -91,19 +96,19 @@ class GameDevs():
             config=self.tasks_config['game_developer_task'], # type: ignore[index]
         )
 
+    @task
+    def technical_implementation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['technical_implementation_task'], # type: ignore[index]
+        )
+
     @crew
     def crew(self) -> Crew:
         """Creates the GameDevs crew"""
-
-        text_source = TextFileKnowledgeSource(
-            file_paths=["game_design_document/instructions.mdx", "game_design_document/template.mdx"]
-        )
-
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
+            agents=self.agents, # All agents back in the list
             tasks=self.tasks, # Automatically created by the @task decorator
-            process=Process.sequential,
-            verbose=True,
-            knowledge_sources=[text_source], # Add knowledge sources here
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            process=Process.sequential,  # Back to sequential - more efficient
+            verbose=True
+            # Keep delegation enabled in agents for flexibility
         )

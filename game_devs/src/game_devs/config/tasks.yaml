@@ -1,21 +1,32 @@
 game_director_task:
   description: >
-    Define the creative vision, core concept, and high-level direction for the {game} prototype. Set clear objectives and constraints for the team to ensure a unified vision.
+    Create a comprehensive game pitch and creative vision for the {game} prototype. Define the target audience, platform strategy, core game concept, player objectives, win/lose conditions, and overall progression structure. Establish clear creative pillars that will guide all development decisions. Focus on creating a compelling game concept that captures the essence of what makes this game unique and engaging.
   expected_output: >
-    A concise vision statement, core concept summary, and a list of objectives and constraints for the {game} prototype.
+    A comprehensive game pitch including: game concept and hook, target audience analysis, platform strategy, player objectives and win/lose conditions, progression overview, and creative vision. Write this as a complete game design document section with detailed explanations, specific examples, and clear structure similar to professional game design documents. Include sections like game pitch, platform, target audience, player objectives, and win/lose conditions with thorough explanations.
   agent: game_director
 
 game_designer_task:
   description: >
-    Design the core gameplay mechanics, rules, and systems for the {game} prototype based on the vision and objectives. Create a basic gameplay loop and outline key features.
+    Based on the game director's vision and creative direction, design comprehensive gameplay mechanics and systems for the {game} prototype. Review and build upon the director's target audience, platform strategy, and core concept to create gameplay systems that support the established creative vision. Ensure all mechanics align with the director's established creative pillars and target audience preferences.
   expected_output: >
-    A detailed description of the core gameplay mechanics, rules, systems, and a basic gameplay loop for the {game} prototype, including a list of key features.
+    A detailed gameplay systems document that builds upon the director's vision, including: core mechanics explanation, resource systems, player actions and controls, gameplay loops, progression mechanics, balancing framework, and specific gameplay examples. Ensure all mechanics align with the established creative vision and target audience. Reference how the mechanics support the director's creative pillars and player objectives.
   agent: game_designer
+  context: [game_director_task]
 
 game_developer_task:
   description: >
-    Implement a technical plan for the {game} prototype, outlining the architecture, tools, and technologies to be used. Provide a step-by-step plan for rapid prototyping and testing.
+    Consolidate the creative vision from the director and gameplay mechanics from the designer into a single comprehensive game design document. Review both the director's creative vision and the designer's gameplay systems to ensure they work together cohesively. Identify any inconsistencies and resolve them to create a unified document with consistent terminology and vision.
   expected_output: >
-    A technical implementation plan for the {game} prototype, including architecture, tools, technologies, and a step-by-step prototyping and testing plan.
+    A consolidated game design document that seamlessly combines the creative vision and gameplay mechanics into a unified document with consistent terminology and vision. Ensure the director's creative pillars are supported by the designer's mechanics, and that the target audience and platform strategy align with the proposed gameplay systems.
   agent: game_developer
+  context: [game_director_task, game_designer_task]
   output_file: out/game_design_document.md
+
+technical_implementation_task:
+  description: >
+    Create a comprehensive technical implementation plan that supports the creative vision and gameplay mechanics established in the consolidated game design document. Review the complete game design document to understand the technical requirements and ensure all technical decisions align with the design goals, target audience, and platform strategy established by the team.
+  expected_output: >
+    A detailed technical implementation plan that directly supports the established game design, including architecture recommendations, development tools, prototype priorities, technical challenges and solutions, development timeline with milestones, and step-by-step implementation strategy. Reference specific elements from the game design document and explain how technical decisions support the creative vision and gameplay mechanics.
+  agent: game_developer
+  context: [game_developer_task]
+  output_file: out/technical_implementation.md

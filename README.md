@@ -9,7 +9,7 @@ CrewGameDevs is an AI-powered multi-agent system built with [CrewAI](https://cre
 - Modular, extensible agent/task design for easy customization
 
 ## Technical Tools
-- CrewAI (multi-agent orchestration)
+- CrewAI 0.140.0 (multi-agent orchestration)
 - Python 3.10–3.13
 - (Optional) Unreal Engine C++ for downstream prototyping
 
