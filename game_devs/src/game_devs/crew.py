@@ -55,130 +55,232 @@ class GameDevs():
         for directory in output_dirs:
             os.makedirs(directory, exist_ok=True)
 
-    @agent
-    def pitch_writer(self) -> Agent:
-        # Configure LLM with Claude - Pitch Writer focuses on concept clarity
-        claude_llm = LLM(
-            model="claude-3-5-haiku-latest",
+    # Claude LLM configurations optimized for different agent types
+    # Using Haiku 3.5 as default for cost-effective testing
+    @property
+    def pitch_llm(self):
+        """Creative pitch writing - higher temperature for creativity"""
+        return LLM(
+            model="claude-3-5-haiku-20241022",  # Haiku 3.5: Fast and cost-effective
             temperature=0.8,
-            max_tokens=4000,
-            top_p=0.9
+            max_tokens=4000
         )
 
+    @property
+    def design_llm(self):
+        """Gameplay design - balanced creativity and structure"""
+        return LLM(
+            model="claude-3-5-haiku-20241022",  # Haiku 3.5: Fast and cost-effective
+            temperature=0.7,
+            max_tokens=6000
+        )
+
+    @property
+    def technical_llm(self):
+        """Technical implementation - lower temperature for precision"""
+        return LLM(
+            model="claude-3-5-haiku-20241022",  # Haiku 3.5: Fast and cost-effective
+            temperature=0.3,
+            max_tokens=6000
+        )
+
+    @property
+    def editorial_llm(self):
+        """Editorial and integration - balanced approach"""
+        return LLM(
+            model="claude-3-5-haiku-20241022",  # Haiku 3.5: Fast and cost-effective
+            temperature=0.5,
+            max_tokens=8000
+        )
+
+    # Production-ready LLM configurations using higher-tier models
+    @property
+    def production_pitch_llm(self):
+        """Production pitch writing with Sonnet 3.5 for better quality"""
+        return LLM(
+            model="claude-3-5-sonnet-20241022",  # Sonnet 3.5: High intelligence
+            temperature=0.8,
+            max_tokens=4000
+        )
+
+    @property
+    def production_design_llm(self):
+        """Production gameplay design with Sonnet 3.5"""
+        return LLM(
+            model="claude-3-5-sonnet-20241022",  # Sonnet 3.5: High intelligence
+            temperature=0.7,
+            max_tokens=6000
+        )
+
+    @property
+    def production_technical_llm(self):
+        """Production technical implementation with Sonnet 3.5"""
+        return LLM(
+            model="claude-3-5-sonnet-20241022",  # Sonnet 3.5: High intelligence
+            temperature=0.3,
+            max_tokens=6000
+        )
+
+    @property
+    def production_editorial_llm(self):
+        """Production editorial with Sonnet 3.5"""
+        return LLM(
+            model="claude-3-5-sonnet-20241022",  # Sonnet 3.5: High intelligence
+            temperature=0.5,
+            max_tokens=8000
+        )
+
+    def get_model_config(self, use_production_models=False):
+        """Get model configuration based on environment"""
+        if use_production_models:
+            return {
+                'pitch': self.production_pitch_llm,
+                'design': self.production_design_llm,
+                'technical': self.production_technical_llm,
+                'editorial': self.production_editorial_llm
+            }
+        else:
+            return {
+                'pitch': self.pitch_llm,
+                'design': self.design_llm,
+                'technical': self.technical_llm,
+                'editorial': self.editorial_llm
+            }
+
+    @agent
+    def pitch_writer(self) -> Agent:
+        # Use environment variable to determine if production models should be used
+        use_production = os.getenv('USE_PRODUCTION_MODELS', 'false').lower() == 'true'
+        models = self.get_model_config(use_production)
+
         return Agent(
-            config=self.agents_config['pitch_writer'], # type: ignore[index]
-            llm=claude_llm,
+            config=self.agents_config['pitch_writer'],
             verbose=True,
-            allow_delegation=True,  # Enable delegation for collaboration
-            memory=True,  # Remember successful pitch patterns
-            tools=[
-                self.design_guide_search,  # Access design best practices
-                self.knowledge_explorer     # Explore available resources
-            ]
+            llm=models['pitch'],
+            allow_delegation=True,
+            tools=[self.template_reader, self.design_guide_search, self.knowledge_explorer]
         )
 
     @agent
     def gameplay_designer(self) -> Agent:
-        # Configure LLM with Claude - Gameplay Designer focuses on mechanics
-        claude_llm = LLM(
-            model="claude-3-5-haiku-latest",
-            temperature=0.7,
-            max_tokens=4000,
-            top_p=0.85
-        )
+        use_production = os.getenv('USE_PRODUCTION_MODELS', 'false').lower() == 'true'
+        models = self.get_model_config(use_production)
 
         return Agent(
-            config=self.agents_config['gameplay_designer'], # type: ignore[index]
-            llm=claude_llm,
+            config=self.agents_config['gameplay_designer'],
             verbose=True,
-            allow_delegation=True,  # Enable delegation for collaboration
-            memory=True,  # Remember successful gameplay patterns
-            tools=[
-                self.design_guide_search,  # Access gameplay design guidance
-                self.knowledge_explorer     # Explore available resources
-            ]
+            llm=models['design'],
+            allow_delegation=True,
+            tools=[self.template_reader, self.design_guide_search, self.knowledge_explorer]
         )
 
     @agent
     def technical_architect(self) -> Agent:
-        # Configure LLM with Claude - Technical Architect focuses on implementation
-        claude_llm = LLM(
-            model="claude-3-5-haiku-latest",
-            temperature=0.3,
-            max_tokens=4000,
-            top_p=0.9
-        )
+        use_production = os.getenv('USE_PRODUCTION_MODELS', 'false').lower() == 'true'
+        models = self.get_model_config(use_production)
 
         return Agent(
-            config=self.agents_config['technical_architect'], # type: ignore[index]
-            llm=claude_llm,
+            config=self.agents_config['technical_architect'],
             verbose=True,
-            allow_delegation=True,  # Enable delegation for collaboration
-            memory=True,  # Remember successful architectural patterns
-            tools=[
-                self.template_reader,      # Access GDD template structure
-                self.design_guide_search,  # Access technical guidance
-                self.knowledge_explorer    # Explore available resources
-            ]
+            llm=models['technical'],
+            allow_delegation=True,
+            tools=[self.design_guide_search, self.knowledge_explorer]
         )
 
     @agent
     def chief_editor(self) -> Agent:
-        # Configure LLM with Claude - Chief Editor focuses on integration and polish
-        claude_llm = LLM(
-            model="claude-3-5-haiku-latest",
-            temperature=0.5,
-            max_tokens=4000,
-            top_p=0.8
-        )
+        use_production = os.getenv('USE_PRODUCTION_MODELS', 'false').lower() == 'true'
+        models = self.get_model_config(use_production)
 
         return Agent(
-            config=self.agents_config['chief_editor'], # type: ignore[index]
-            llm=claude_llm,
+            config=self.agents_config['chief_editor'],
             verbose=True,
-            allow_delegation=True,  # Editor can coordinate with other agents for clarification
-            memory=True,  # Remember successful integration patterns
-            tools=[
-                self.template_reader,      # Access complete GDD template structure
-                self.design_guide_search,  # Access formatting and integration guidance
-                self.knowledge_explorer,   # Explore all available resources
-                self.template_validator    # Validate document structure and completeness
-            ]
+            llm=models['editorial'],
+            allow_delegation=True,
+            tools=[self.template_reader, self.design_guide_search, self.knowledge_explorer, self.template_validator]
         )
 
     @task
     def pitch_concept_task(self) -> Task:
         return Task(
-            config=self.tasks_config['pitch_concept_task'], # type: ignore[index]
+            config=self.tasks_config['pitch_concept_task'],
+            agent=self.pitch_writer()
+        )
+
+    @task
+    def pitch_review_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['pitch_review_task'],
+            agent=self.chief_editor()
+        )
+
+    @task
+    def pitch_refinement_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['pitch_refinement_task'],
+            agent=self.pitch_writer()
         )
 
     @task
     def gameplay_mechanics_task(self) -> Task:
         return Task(
-            config=self.tasks_config['gameplay_mechanics_task'], # type: ignore[index]
+            config=self.tasks_config['gameplay_mechanics_task'],
+            agent=self.gameplay_designer()
         )
 
     @task
-    def gdd_integration_task(self) -> Task:
+    def gameplay_review_task(self) -> Task:
         return Task(
-            config=self.tasks_config['gdd_integration_task'], # type: ignore[index]
+            config=self.tasks_config['gameplay_review_task'],
+            agent=self.chief_editor()
+        )
+
+    @task
+    def gameplay_refinement_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['gameplay_refinement_task'],
+            agent=self.gameplay_designer()
         )
 
     @task
     def technical_implementation_task(self) -> Task:
         return Task(
-            config=self.tasks_config['technical_implementation_task'], # type: ignore[index]
+            config=self.tasks_config['technical_implementation_task'],
+            agent=self.technical_architect()
+        )
+
+    @task
+    def gdd_integration_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['gdd_integration_task'],
+            agent=self.chief_editor()
+        )
+
+    @task
+    def final_gdd_review_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['final_gdd_review_task'],
+            agent=self.chief_editor()
+        )
+
+    @task
+    def final_polish_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['final_polish_task'],
+            agent=self.chief_editor()
         )
 
     @crew
     def crew(self) -> Crew:
         """Creates the GameDevs crew"""
         return Crew(
-            agents=self.agents, # All agents in the specialized workflow
-            tasks=self.tasks, # Automatically created by the @task decorator
-            process=Process.sequential,  # Sequential for proper context flow
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
             verbose=True,
-            # All agents now have delegation enabled for enhanced collaboration
-            # Template tools with validation enable professional GDD generation
-            # Organized output structure for better file management
+            memory=False,  # Disable memory to avoid OpenAI dependency
+            planning=False,  # Disable planning to avoid OpenAI dependency
+            # Removed OpenAI embedder - CrewAI will work without embeddings
+            # or you can configure a local embedding model if needed
+            output_log_file="outputs/logs/crew_execution.log"
         )

@@ -2,59 +2,236 @@ pitch_concept_task:
   description: >
     Create a compelling and concise game concept that captures the essence of the {game} in a clear, focused pitch. Your primary goal is to produce a two-sentence pitch that succinctly describes the core game idea and hook - what makes it exciting and unique. Then elaborate with brief, focused sections on the game hook/unique selling point, target audience, platform strategy, 2-3 design pillars that define the experience, and high-level player objectives and win/lose conditions. Keep this concise and focused - the pitch itself should be just two sentences, followed by short paragraphs or bullet points. This sets the foundation and guiding vision for all subsequent design work.
 
-    Use the Design Guide Search tool to find relevant best practices for concept development and pitch creation. Reference guidance on keeping concepts clear, concise, and focused on core fun elements.
+    Use the GDD Template Reader Tool to access the template structure and ensure your pitch aligns with professional game design document standards.
   expected_output: >
-    A focused Game Pitch section including: (1) A two-sentence pitch that captures the core game idea and hook, (2) Brief elaboration on the unique selling point/game hook, (3) Target audience and platform identification, (4) 2-3 design pillars that define the experience (e.g., "Simple Base-Building", "Short Session Battles", "High Approachability"), (5) High-level player objectives and win/lose conditions. Format as clear sections with headings. Keep each section brief and focused - this is about crystallizing the core concept, not comprehensive documentation. Use proper markdown formatting with ## for section headings and bullet points where appropriate.
+    A concise, compelling game pitch with:
+    - Two-sentence core pitch statement
+    - Game hook/unique selling point (2-3 sentences)
+    - Target audience definition (1 paragraph)
+    - Platform strategy (bullet points)
+    - 2-3 core design pillars (bullet points)
+    - High-level player objectives and win/lose conditions (1 paragraph)
+    - Professional formatting suitable for stakeholder review
   agent: pitch_writer
-  output_file: out/concept/game_pitch.md
-  markdown: true
+  output_file: "outputs/pitch/{game}_concept_pitch.md"
+
+# Human Review Point 1: Pitch Review
+pitch_review_task:
+  description: >
+    Please review the generated game pitch for "{game}" and provide feedback on:
+
+    1. **Clarity and Appeal**: Is the core concept clear and compelling?
+    2. **Market Viability**: Does the target audience and platform strategy make sense?
+    3. **Uniqueness**: Are the design pillars distinctive enough?
+    4. **Feasibility**: Do the objectives seem achievable for the intended scope?
+
+    Review the pitch content from the previous task output and provide specific feedback on what works well and what needs improvement.
+    Consider market trends, technical feasibility, and audience appeal in your review.
+  expected_output: >
+    Human feedback on the game pitch including:
+    - What aspects work well
+    - Specific areas for improvement
+    - Suggestions for refinement
+    - Approval status or requested changes
+  agent: chief_editor
+  human_input: true
+  context:
+    - pitch_concept_task
+
+# Pitch Refinement Task
+pitch_refinement_task:
+  description: >
+    Based on the human feedback received, refine and improve the game pitch for "{game}".
+
+    Use the context from the previous tasks to access the human feedback and original pitch content.
+    Address all the feedback points while maintaining the core vision. Ensure the refined pitch:
+    - Incorporates all valid suggestions
+    - Maintains professional quality
+    - Stays within the scope requirements
+    - Enhances clarity and market appeal
+  expected_output: >
+    A refined game pitch that addresses human feedback while maintaining the core vision.
+    Include a brief summary of changes made based on the feedback.
+  agent: pitch_writer
+  context:
+    - pitch_concept_task
+    - pitch_review_task
+  output_file: "outputs/pitch/{game}_refined_pitch.md"
 
 gameplay_mechanics_task:
   description: >
-    Based on the established pitch and design pillars, design comprehensive gameplay mechanics and core loops that directly support the game concept. Focus on the core gameplay loop - what the player does repeatedly and how one session unfolds. Detail the major mechanics (unit management, base building, combat, resource economy, etc.) and how they interconnect. Specify player controls and perspective, win/lose conditions with more detail, and balancing considerations for casual play. Reference the design pillars throughout to show how each mechanic aligns with the guiding principles. Ensure the mechanics translate the high-level concept into tangible, playable systems.
+    Design comprehensive gameplay mechanics for the {game} concept based on the approved pitch. Create detailed explanations of core mechanics, player progression systems, difficulty scaling, and player engagement loops. Focus on how these mechanics serve the game's core design pillars and target audience identified in the pitch.
 
-    Use the Design Guide Search tool to find guidance on gameplay mechanics documentation, core loops, and system interaction design. Look for best practices on clarity and systematic thinking in game design.
+    Your design should include:
+    1. Core gameplay loop (what players do minute-to-minute)
+    2. Primary game mechanics (movement, interaction, combat, etc.)
+    3. Player progression systems (leveling, unlocks, achievements)
+    4. Difficulty progression and balancing approach
+    5. Player engagement and retention mechanics
+    6. How mechanics align with the design pillars from the pitch
+
+    Use the GDD Template Reader Tool to ensure proper structure and the Design Guide Search Tool for best practices in game mechanics design.
   expected_output: >
-    A detailed Gameplay Design section including: (1) Core gameplay loop description - what players do repeatedly in a session, (2) Major mechanics breakdown with explanations of how they interact (unit management, base building, combat, resources, etc.), (3) Player controls and perspective specifications, (4) Detailed win/lose conditions and progression systems, (5) Balancing considerations for casual audience, (6) Clear connections to the established design pillars. Use clear subheadings (## and ###) and provide specific examples. The section should be detailed enough for a developer to understand what to prototype. Format using proper markdown with bullet points, numbered lists, and clear hierarchy.
+    A comprehensive gameplay mechanics document with:
+    - Core gameplay loop description (2-3 paragraphs)
+    - Detailed primary mechanics explanations
+    - Player progression system design
+    - Difficulty and balancing framework
+    - Engagement and retention strategies
+    - Clear connection to design pillars
+    - Professional formatting following GDD standards
   agent: gameplay_designer
-  context: [pitch_concept_task]
-  output_file: out/design/gameplay_mechanics.md
-  markdown: true
+  context:
+    - pitch_refinement_task
+  output_file: "outputs/design/{game}_gameplay_mechanics.md"
 
-gdd_integration_task:
+# Human Review Point 2: Gameplay Review
+gameplay_review_task:
   description: >
-    Compile and integrate the pitch concept and gameplay mechanics into a single, cohesive, professionally formatted game design document. Ensure consistent terminology throughout, logical flow from concept to mechanics, and fill any gaps in the documentation. Identify and resolve any inconsistencies between the pitch and gameplay sections. Add any missing sections that would be expected in a complete GDD (brief narrative/setting context, visual/audio style notes as placeholders). Format according to professional GDD standards with clear section headings and structure.
+    Please review the gameplay mechanics design for "{game}" and provide feedback on:
 
-    Use the GDD Template Reader tool to access the complete template structure and ensure all required sections are covered. Use the Design Guide Search tool to find guidance on document integration, consistency, and professional formatting. Use the Template Structure Validator tool to verify completeness. Ensure the output follows the template structure exactly.
+    1. **Fun Factor**: Are the core mechanics engaging and enjoyable?
+    2. **Balance**: Do the progression and difficulty systems seem well-balanced?
+    3. **Cohesion**: Do all mechanics work together cohesively?
+    4. **Feasibility**: Are the mechanics technically achievable?
+    5. **Target Audience Fit**: Do the mechanics appeal to the intended audience?
+
+    Review the gameplay design from the previous task output and provide detailed feedback on the mechanics design, including suggestions for improvements or concerns about implementation.
   expected_output: >
-    A unified, professionally formatted Game Design Document that seamlessly combines the pitch and gameplay sections. Must follow the GDD template structure exactly. Ensure consistent terminology, logical flow, and comprehensive coverage. Include: (1) Integrated pitch and concept section, (2) Detailed gameplay mechanics section, (3) Any additional sections needed for completeness (narrative context, visual style notes, etc.), (4) Professional formatting with clear headings and structure matching the template, (5) Gap identification and resolution between sections. The document should read as a cohesive design reference, not separate sections pasted together. Use proper markdown formatting throughout with consistent heading hierarchy (# for title, ## for major sections, ### for subsections).
+    Human feedback on the gameplay mechanics including:
+    - Assessment of fun factor and engagement
+    - Balance and progression feedback
+    - Technical feasibility concerns
+    - Suggestions for improvement
+    - Approval status or requested changes
   agent: chief_editor
-  context: [pitch_concept_task, gameplay_mechanics_task]
-  output_file: out/gdd/game_design_document.md
-  markdown: true
+  human_input: true
+  context:
+    - gameplay_mechanics_task
+
+# Gameplay Refinement Task
+gameplay_refinement_task:
+  description: >
+    Based on the human feedback received, refine and improve the gameplay mechanics for "{game}".
+
+    Use the context from the previous tasks to access the human feedback and original mechanics content.
+    Address all feedback while maintaining the core design vision. Ensure the refined mechanics:
+    - Incorporate all valid suggestions
+    - Maintain balance and fun factor
+    - Align with technical constraints
+    - Serve the target audience effectively
+  expected_output: >
+    Refined gameplay mechanics that address human feedback while maintaining design integrity.
+    Include a summary of changes made based on the feedback.
+  agent: gameplay_designer
+  context:
+    - gameplay_mechanics_task
+    - gameplay_review_task
+  output_file: "outputs/design/{game}_refined_mechanics.md"
 
 technical_implementation_task:
   description: >
-    Using the complete game design document as context, create a comprehensive technical implementation plan that transforms the design into buildable, achievable development goals. Focus on architecture recommendations, tool/engine selection, prototype priorities, and realistic development timelines aligned with solo developer constraints. Address technical challenges and propose practical solutions. Ensure all technical decisions support the creative vision while maintaining project feasibility and scope management. Include explicit scope validation for solo developer constraints (6-12 month timeline) as emphasized in the optimization document. Reference specific design elements and explain how technical choices support the established gameplay and creative goals.
+    Create a comprehensive technical implementation plan for the {game} based on the approved gameplay mechanics. This should translate the game design into concrete technical requirements, architecture decisions, and development considerations.
 
-    Use the Design Guide Search tool to find guidance on technical requirements, scope management, and solo developer considerations. Reference the GDD Template Reader for technical section formatting requirements.
+    Your plan should include:
+    1. Technical architecture overview (client-server, frameworks, etc.)
+    2. Core systems design (rendering, input, audio, networking if applicable)
+    3. Data structures and algorithms for key mechanics
+    4. Performance requirements and optimization strategies
+    5. Platform-specific considerations
+    6. Development tools and pipeline recommendations
+    7. Testing and QA approach
+    8. Estimated development timeline and resource requirements
+
+    Use technical best practices and consider scalability, maintainability, and performance throughout the design.
   expected_output: >
-    A detailed Technical Implementation Plan including: (1) Architecture overview and system design recommendations, (2) Development tools and engine selection with justification, (3) Prototype priorities - which features to build first, (4) Technical challenges identification with proposed solutions, (5) Development timeline with realistic milestones for 6-12 month solo development, (6) Specific technical decisions that support the design goals, (7) Scope management recommendations and potential areas for simplification, (8) Solo developer constraint validation and feasibility assessment. Reference the game design document throughout and ensure technical feasibility aligns with creative vision. Use proper markdown formatting with clear section hierarchy and bullet points for lists.
+    A detailed technical implementation document with:
+    - System architecture diagrams and explanations
+    - Core systems technical specifications
+    - Data structure and algorithm designs
+    - Performance and optimization plans
+    - Platform-specific technical requirements
+    - Development pipeline and tools recommendations
+    - Testing strategy and QA approach
+    - Timeline and resource estimates
+    - Technical risk assessment and mitigation strategies
   agent: technical_architect
-  context: [gdd_integration_task]
-  output_file: out/technical/implementation_plan.md
-  markdown: true
+  context:
+    - gameplay_refinement_task
+  output_file: "outputs/technical/{game}_implementation_plan.md"
 
-# Optional: Design review task for human-in-the-loop feedback (can be enabled later)
-design_review_task:
+gdd_integration_task:
   description: >
-    Review the complete game design document and technical implementation plan for completeness, consistency, and feasibility. Analyze the design for any gaps, contradictions, or potential issues. Provide a comprehensive review report with specific recommendations for improvements. Focus on ensuring the design is cohesive, the technical plan is realistic for solo development, and all sections work together effectively. This task enables human review and feedback incorporation.
+    Integrate all the refined design elements into a comprehensive, professional Game Design Document (GDD) for the {game}. This document should compile the approved pitch, refined gameplay mechanics, and technical implementation plan into a cohesive, professional document that follows industry standards.
 
-    Use the Template Structure Validator tool to verify completeness against the template. Use the Design Guide Search tool to reference best practices for design review and quality assurance.
+    Your integration should:
+    1. Follow the GDD template structure exactly
+    2. Ensure all sections flow logically and consistently
+    3. Maintain professional formatting and presentation
+    4. Include cross-references between related sections
+    5. Verify all content aligns with the original vision
+    6. Add executive summary and conclusions
+
+    Use the GDD Template Reader Tool to ensure proper structure and the Template Validation Tool to verify completeness and quality.
   expected_output: >
-    A comprehensive Design Review Report including: (1) Template structure validation results, (2) Design consistency analysis, (3) Technical feasibility assessment, (4) Identified gaps or issues, (5) Specific recommendations for improvement, (6) Overall quality assessment and approval status. Format as a structured review document with clear sections and actionable feedback. Include priority levels for recommendations (High/Medium/Low) and specific sections or areas that need attention.
+    A complete, professional Game Design Document with:
+    - Executive summary
+    - Game concept and vision (from refined pitch)
+    - Detailed gameplay mechanics (refined version)
+    - Technical implementation specifications
+    - Professional formatting and structure
+    - Consistent tone and style throughout
+    - All sections properly cross-referenced
+    - Validation report confirming completeness
   agent: chief_editor
-  context: [gdd_integration_task, technical_implementation_task]
-  output_file: out/review/design_review.md
-  markdown: true
-  human_input: true  # Enable human review and feedback
+  context:
+    - pitch_refinement_task
+    - gameplay_refinement_task
+    - technical_implementation_task
+  output_file: "outputs/final/{game}_complete_gdd.md"
+
+# Human Review Point 3: Final GDD Review
+final_gdd_review_task:
+  description: >
+    Please conduct a final comprehensive review of the complete Game Design Document for "{game}".
+
+    This is the final checkpoint before completion. Please evaluate:
+
+    1. **Completeness**: Does the GDD cover all necessary aspects?
+    2. **Quality**: Is the document professional and well-written?
+    3. **Consistency**: Are all sections aligned and coherent?
+    4. **Feasibility**: Is the overall project realistic and achievable?
+    5. **Market Readiness**: Is this GDD ready for stakeholder presentation?
+
+    Review the complete GDD from the previous task output and provide your final assessment and any last-minute refinements needed.
+  expected_output: >
+    Final human review of the complete GDD including:
+    - Overall quality assessment
+    - Completeness verification
+    - Final refinement suggestions
+    - Market readiness evaluation
+    - Final approval or additional revision requests
+  agent: chief_editor
+  human_input: true
+  context:
+    - gdd_integration_task
+
+# Final Polish Task
+final_polish_task:
+  description: >
+    Apply final polish and refinements to the Game Design Document for "{game}" based on the final human review.
+
+    Use the context from the previous tasks to access the final review feedback and complete GDD content.
+    Make any final adjustments while ensuring:
+    - All feedback is addressed appropriately
+    - Document maintains professional quality
+    - Consistency is preserved throughout
+    - The final version is market-ready
+  expected_output: >
+    The final, polished Game Design Document ready for stakeholder presentation.
+    Include a completion summary highlighting the key features and strengths of the design.
+  agent: chief_editor
+  context:
+    - gdd_integration_task
+    - final_gdd_review_task
+  output_file: "outputs/final/{game}_final_gdd.md"
