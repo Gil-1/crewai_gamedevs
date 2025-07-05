@@ -1,32 +1,32 @@
-game_director_task:
+pitch_concept_task:
   description: >
-    Create a comprehensive game pitch and creative vision for the {game} prototype. Define the target audience, platform strategy, core game concept, player objectives, win/lose conditions, and overall progression structure. Establish clear creative pillars that will guide all development decisions. Focus on creating a compelling game concept that captures the essence of what makes this game unique and engaging.
+    Create a compelling and concise game concept that captures the essence of the {game} in a clear, focused pitch. Your primary goal is to produce a two-sentence pitch that succinctly describes the core game idea and hook - what makes it exciting and unique. Then elaborate with brief, focused sections on the game hook/unique selling point, target audience, platform strategy, 2-3 design pillars that define the experience, and high-level player objectives and win/lose conditions. Keep this concise and focused - the pitch itself should be just two sentences, followed by short paragraphs or bullet points. This sets the foundation and guiding vision for all subsequent design work.
   expected_output: >
-    A comprehensive game pitch including: game concept and hook, target audience analysis, platform strategy, player objectives and win/lose conditions, progression overview, and creative vision. Write this as a complete game design document section with detailed explanations, specific examples, and clear structure similar to professional game design documents. Include sections like game pitch, platform, target audience, player objectives, and win/lose conditions with thorough explanations.
-  agent: game_director
+    A focused Game Pitch section including: (1) A two-sentence pitch that captures the core game idea and hook, (2) Brief elaboration on the unique selling point/game hook, (3) Target audience and platform identification, (4) 2-3 design pillars that define the experience (e.g., "Simple Base-Building", "Short Session Battles", "High Approachability"), (5) High-level player objectives and win/lose conditions. Format as clear sections with headings. Keep each section brief and focused - this is about crystallizing the core concept, not comprehensive documentation.
+  agent: pitch_writer
 
-game_designer_task:
+gameplay_mechanics_task:
   description: >
-    Based on the game director's vision and creative direction, design comprehensive gameplay mechanics and systems for the {game} prototype. Review and build upon the director's target audience, platform strategy, and core concept to create gameplay systems that support the established creative vision. Ensure all mechanics align with the director's established creative pillars and target audience preferences.
+    Based on the established pitch and design pillars, design comprehensive gameplay mechanics and core loops that directly support the game concept. Focus on the core gameplay loop - what the player does repeatedly and how one session unfolds. Detail the major mechanics (unit management, base building, combat, resource economy, etc.) and how they interconnect. Specify player controls and perspective, win/lose conditions with more detail, and balancing considerations for casual play. Reference the design pillars throughout to show how each mechanic aligns with the guiding principles. Ensure the mechanics translate the high-level concept into tangible, playable systems.
   expected_output: >
-    A detailed gameplay systems document that builds upon the director's vision, including: core mechanics explanation, resource systems, player actions and controls, gameplay loops, progression mechanics, balancing framework, and specific gameplay examples. Ensure all mechanics align with the established creative vision and target audience. Reference how the mechanics support the director's creative pillars and player objectives.
-  agent: game_designer
-  context: [game_director_task]
+    A detailed Gameplay Design section including: (1) Core gameplay loop description - what players do repeatedly in a session, (2) Major mechanics breakdown with explanations of how they interact (unit management, base building, combat, resources, etc.), (3) Player controls and perspective specifications, (4) Detailed win/lose conditions and progression systems, (5) Balancing considerations for casual audience, (6) Clear connections to the established design pillars. Use clear subheadings and provide specific examples. The section should be detailed enough for a developer to understand what to prototype.
+  agent: gameplay_designer
+  context: [pitch_concept_task]
 
-game_developer_task:
+gdd_integration_task:
   description: >
-    Consolidate the creative vision from the director and gameplay mechanics from the designer into a single comprehensive game design document. Review both the director's creative vision and the designer's gameplay systems to ensure they work together cohesively. Identify any inconsistencies and resolve them to create a unified document with consistent terminology and vision.
+    Compile and integrate the pitch concept and gameplay mechanics into a single, cohesive, professionally formatted game design document. Ensure consistent terminology throughout, logical flow from concept to mechanics, and fill any gaps in the documentation. Identify and resolve any inconsistencies between the pitch and gameplay sections. Add any missing sections that would be expected in a complete GDD (brief narrative/setting context, visual/audio style notes as placeholders). Format according to professional GDD standards with clear section headings and structure.
   expected_output: >
-    A consolidated game design document that seamlessly combines the creative vision and gameplay mechanics into a unified document with consistent terminology and vision. Ensure the director's creative pillars are supported by the designer's mechanics, and that the target audience and platform strategy align with the proposed gameplay systems.
-  agent: game_developer
-  context: [game_director_task, game_designer_task]
+    A unified, professionally formatted Game Design Document that seamlessly combines the pitch and gameplay sections. Ensure consistent terminology, logical flow, and comprehensive coverage. Include: (1) Integrated pitch and concept section, (2) Detailed gameplay mechanics section, (3) Any additional sections needed for completeness (narrative context, visual style notes, etc.), (4) Professional formatting with clear headings and structure, (5) Gap identification and resolution between sections. The document should read as a cohesive design reference, not separate sections pasted together.
+  agent: chief_editor
+  context: [pitch_concept_task, gameplay_mechanics_task]
   output_file: out/game_design_document.md
 
 technical_implementation_task:
   description: >
-    Create a comprehensive technical implementation plan that supports the creative vision and gameplay mechanics established in the consolidated game design document. Review the complete game design document to understand the technical requirements and ensure all technical decisions align with the design goals, target audience, and platform strategy established by the team.
+    Using the complete game design document as context, create a comprehensive technical implementation plan that transforms the design into buildable, achievable development goals. Focus on architecture recommendations, tool/engine selection, prototype priorities, and realistic development timelines aligned with solo developer constraints. Address technical challenges and propose practical solutions. Ensure all technical decisions support the creative vision while maintaining project feasibility and scope management. Reference specific design elements and explain how technical choices support the established gameplay and creative goals.
   expected_output: >
-    A detailed technical implementation plan that directly supports the established game design, including architecture recommendations, development tools, prototype priorities, technical challenges and solutions, development timeline with milestones, and step-by-step implementation strategy. Reference specific elements from the game design document and explain how technical decisions support the creative vision and gameplay mechanics.
-  agent: game_developer
-  context: [game_developer_task]
+    A detailed Technical Implementation Plan including: (1) Architecture overview and system design recommendations, (2) Development tools and engine selection with justification, (3) Prototype priorities - which features to build first, (4) Technical challenges identification with proposed solutions, (5) Development timeline with realistic milestones for 6-12 month solo development, (6) Specific technical decisions that support the design goals, (7) Scope management recommendations and potential areas for simplification. Reference the game design document throughout and ensure technical feasibility aligns with creative vision.
+  agent: technical_architect
+  context: [gdd_integration_task]
   output_file: out/technical_implementation.md

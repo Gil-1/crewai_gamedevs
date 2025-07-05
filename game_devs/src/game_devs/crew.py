@@ -22,81 +22,93 @@ class GameDevs():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def game_director(self) -> Agent:
-        # Configure LLM with Ollama - Director coordinates team
-        ollama_llm = LLM(
+    def pitch_writer(self) -> Agent:
+        # Configure LLM with Claude - Pitch Writer focuses on concept clarity
+        claude_llm = LLM(
             model="claude-3-5-haiku-latest",
-            #model="ollama/llama3.1:latest",
-            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.8,
-            max_tokens=4000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,
             top_p=0.9
         )
 
         return Agent(
-            config=self.agents_config['game_director'], # type: ignore[index]
-            llm=ollama_llm,
+            config=self.agents_config['pitch_writer'], # type: ignore[index]
+            llm=claude_llm,
             verbose=True,
-            allow_delegation=True,  # ✅ Keep - Director coordinates team
-            memory=True  # ✅ Add - Learn from past collaborations
+            allow_delegation=False,  # Specialist focuses on pitch expertise
+            memory=True  # Remember successful pitch patterns
         )
 
     @agent
-    def game_designer(self) -> Agent:
-        # Configure LLM with Ollama - Designer focuses on expertise
-        ollama_llm = LLM(
+    def gameplay_designer(self) -> Agent:
+        # Configure LLM with Claude - Gameplay Designer focuses on mechanics
+        claude_llm = LLM(
             model="claude-3-5-haiku-latest",
-            #model="ollama/llama3.1:latest",
-            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.7,
-            max_tokens=4000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,
             top_p=0.85
         )
 
         return Agent(
-            config=self.agents_config['game_designer'], # type: ignore[index]
-            llm=ollama_llm,
+            config=self.agents_config['gameplay_designer'], # type: ignore[index]
+            llm=claude_llm,
             verbose=True,
-            allow_delegation=False,  # ✅ Change - Specialist focuses on expertise
-            memory=True  # ✅ Add - Remember design patterns
+            allow_delegation=False,  # Specialist focuses on gameplay expertise
+            memory=True  # Remember successful gameplay patterns
         )
 
     @agent
-    def game_developer(self) -> Agent:
-        # Configure LLM with Ollama - Developer focuses on expertise
-        ollama_llm = LLM(
+    def technical_architect(self) -> Agent:
+        # Configure LLM with Claude - Technical Architect focuses on implementation
+        claude_llm = LLM(
             model="claude-3-5-haiku-latest",
-            #model="ollama/llama3.1:latest",
-            #base_url=os.getenv("API_BASE", "http://localhost:11434"),
             temperature=0.3,
-            max_tokens=4000,  # Increased to 32K for comprehensive outputs
+            max_tokens=4000,
             top_p=0.9
         )
 
         return Agent(
-            config=self.agents_config['game_developer'], # type: ignore[index]
-            llm=ollama_llm,
+            config=self.agents_config['technical_architect'], # type: ignore[index]
+            llm=claude_llm,
             verbose=True,
-            allow_delegation=False,  # ✅ Change - Specialist focuses on expertise
-            memory=True  # ✅ Add - Remember implementation patterns
+            allow_delegation=False,  # Specialist focuses on technical expertise
+            memory=True  # Remember successful architectural patterns
+        )
+
+    @agent
+    def chief_editor(self) -> Agent:
+        # Configure LLM with Claude - Chief Editor focuses on integration and polish
+        claude_llm = LLM(
+            model="claude-3-5-haiku-latest",
+            temperature=0.5,
+            max_tokens=4000,
+            top_p=0.8
+        )
+
+        return Agent(
+            config=self.agents_config['chief_editor'], # type: ignore[index]
+            llm=claude_llm,
+            verbose=True,
+            allow_delegation=True,  # Editor can coordinate with other agents for clarification
+            memory=True  # Remember successful integration patterns
         )
 
     @task
-    def game_director_task(self) -> Task:
+    def pitch_concept_task(self) -> Task:
         return Task(
-            config=self.tasks_config['game_director_task'], # type: ignore[index]
+            config=self.tasks_config['pitch_concept_task'], # type: ignore[index]
         )
 
     @task
-    def game_designer_task(self) -> Task:
+    def gameplay_mechanics_task(self) -> Task:
         return Task(
-            config=self.tasks_config['game_designer_task'], # type: ignore[index]
+            config=self.tasks_config['gameplay_mechanics_task'], # type: ignore[index]
         )
 
     @task
-    def game_developer_task(self) -> Task:
+    def gdd_integration_task(self) -> Task:
         return Task(
-            config=self.tasks_config['game_developer_task'], # type: ignore[index]
+            config=self.tasks_config['gdd_integration_task'], # type: ignore[index]
         )
 
     @task
@@ -109,9 +121,9 @@ class GameDevs():
     def crew(self) -> Crew:
         """Creates the GameDevs crew"""
         return Crew(
-            agents=self.agents, # All agents back in the list
+            agents=self.agents, # All agents in the specialized workflow
             tasks=self.tasks, # Automatically created by the @task decorator
-            process=Process.sequential,  # Back to sequential - more efficient
+            process=Process.sequential,  # Sequential for proper context flow
             verbose=True
-            # Keep delegation enabled in agents for flexibility
+            # Delegation enabled for chief_editor to coordinate when needed
         )
