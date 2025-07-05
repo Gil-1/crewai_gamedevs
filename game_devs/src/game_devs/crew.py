@@ -4,6 +4,14 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai import LLM
 from typing import List
 import os
+
+# Import template tools for knowledge base integration
+from game_devs.tools.template_tools import (
+    GDDTemplateReaderTool,
+    DesignGuideSearchTool,
+    KnowledgeDirectoryTool
+)
+
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -19,8 +27,16 @@ class GameDevs():
     # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
     # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
 
-    # If you would like to add tools to your agents, you can learn more about it here:
+    # Template tools integration for professional GDD generation
     # https://docs.crewai.com/concepts/agents#agent-tools
+
+    def __init__(self):
+        super().__init__()
+        # Initialize template tools for knowledge base access
+        self.design_guide_search = DesignGuideSearchTool()
+        self.template_reader = GDDTemplateReaderTool()
+        self.knowledge_explorer = KnowledgeDirectoryTool()
+
     @agent
     def pitch_writer(self) -> Agent:
         # Configure LLM with Claude - Pitch Writer focuses on concept clarity
@@ -36,7 +52,11 @@ class GameDevs():
             llm=claude_llm,
             verbose=True,
             allow_delegation=False,  # Specialist focuses on pitch expertise
-            memory=True  # Remember successful pitch patterns
+            memory=True,  # Remember successful pitch patterns
+            tools=[
+                self.design_guide_search,  # Access design best practices
+                self.knowledge_explorer     # Explore available resources
+            ]
         )
 
     @agent
@@ -54,7 +74,11 @@ class GameDevs():
             llm=claude_llm,
             verbose=True,
             allow_delegation=False,  # Specialist focuses on gameplay expertise
-            memory=True  # Remember successful gameplay patterns
+            memory=True,  # Remember successful gameplay patterns
+            tools=[
+                self.design_guide_search,  # Access gameplay design guidance
+                self.knowledge_explorer     # Explore available resources
+            ]
         )
 
     @agent
@@ -72,7 +96,12 @@ class GameDevs():
             llm=claude_llm,
             verbose=True,
             allow_delegation=False,  # Specialist focuses on technical expertise
-            memory=True  # Remember successful architectural patterns
+            memory=True,  # Remember successful architectural patterns
+            tools=[
+                self.template_reader,      # Access GDD template structure
+                self.design_guide_search,  # Access technical guidance
+                self.knowledge_explorer    # Explore available resources
+            ]
         )
 
     @agent
@@ -90,7 +119,12 @@ class GameDevs():
             llm=claude_llm,
             verbose=True,
             allow_delegation=True,  # Editor can coordinate with other agents for clarification
-            memory=True  # Remember successful integration patterns
+            memory=True,  # Remember successful integration patterns
+            tools=[
+                self.template_reader,      # Access complete GDD template structure
+                self.design_guide_search,  # Access formatting and integration guidance
+                self.knowledge_explorer    # Explore all available resources
+            ]
         )
 
     @task
@@ -126,4 +160,5 @@ class GameDevs():
             process=Process.sequential,  # Sequential for proper context flow
             verbose=True
             # Delegation enabled for chief_editor to coordinate when needed
+            # Template tools enable professional GDD generation with knowledge base access
         )
