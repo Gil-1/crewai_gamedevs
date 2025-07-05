@@ -9,7 +9,8 @@ import os
 from game_devs.tools.template_tools import (
     GDDTemplateReaderTool,
     DesignGuideSearchTool,
-    KnowledgeDirectoryTool
+    KnowledgeDirectoryTool,
+    TemplateValidationTool
 )
 
 # If you want to run a snippet of code before or after the crew starts,
@@ -36,6 +37,23 @@ class GameDevs():
         self.design_guide_search = DesignGuideSearchTool()
         self.template_reader = GDDTemplateReaderTool()
         self.knowledge_explorer = KnowledgeDirectoryTool()
+        self.template_validator = TemplateValidationTool()
+
+        # Ensure output directories exist
+        self._ensure_output_directories()
+
+    def _ensure_output_directories(self):
+        """Ensure all output directories exist for organized file structure."""
+        output_dirs = [
+            "out/concept",
+            "out/design",
+            "out/gdd",
+            "out/technical",
+            "out/review"
+        ]
+
+        for directory in output_dirs:
+            os.makedirs(directory, exist_ok=True)
 
     @agent
     def pitch_writer(self) -> Agent:
@@ -51,7 +69,7 @@ class GameDevs():
             config=self.agents_config['pitch_writer'], # type: ignore[index]
             llm=claude_llm,
             verbose=True,
-            allow_delegation=False,  # Specialist focuses on pitch expertise
+            allow_delegation=True,  # Enable delegation for collaboration
             memory=True,  # Remember successful pitch patterns
             tools=[
                 self.design_guide_search,  # Access design best practices
@@ -73,7 +91,7 @@ class GameDevs():
             config=self.agents_config['gameplay_designer'], # type: ignore[index]
             llm=claude_llm,
             verbose=True,
-            allow_delegation=False,  # Specialist focuses on gameplay expertise
+            allow_delegation=True,  # Enable delegation for collaboration
             memory=True,  # Remember successful gameplay patterns
             tools=[
                 self.design_guide_search,  # Access gameplay design guidance
@@ -95,7 +113,7 @@ class GameDevs():
             config=self.agents_config['technical_architect'], # type: ignore[index]
             llm=claude_llm,
             verbose=True,
-            allow_delegation=False,  # Specialist focuses on technical expertise
+            allow_delegation=True,  # Enable delegation for collaboration
             memory=True,  # Remember successful architectural patterns
             tools=[
                 self.template_reader,      # Access GDD template structure
@@ -123,7 +141,8 @@ class GameDevs():
             tools=[
                 self.template_reader,      # Access complete GDD template structure
                 self.design_guide_search,  # Access formatting and integration guidance
-                self.knowledge_explorer    # Explore all available resources
+                self.knowledge_explorer,   # Explore all available resources
+                self.template_validator    # Validate document structure and completeness
             ]
         )
 
@@ -158,7 +177,8 @@ class GameDevs():
             agents=self.agents, # All agents in the specialized workflow
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,  # Sequential for proper context flow
-            verbose=True
-            # Delegation enabled for chief_editor to coordinate when needed
-            # Template tools enable professional GDD generation with knowledge base access
+            verbose=True,
+            # All agents now have delegation enabled for enhanced collaboration
+            # Template tools with validation enable professional GDD generation
+            # Organized output structure for better file management
         )
